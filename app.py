@@ -13,35 +13,55 @@ def index():
 @app.route('/<domain>')
 def get_whois(domain):
   try:
-    domain = whois.whois(domain)
+    domain = whois.query(domain)
+
+    if domain is None:
+      return jsonify(
+        status = 'error',
+        error = 'none',
+      )
+
     if isinstance(domain.creation_date, (datetime, date)):
       domain_creation_date = domain.creation_date.isoformat()
     else:
       domain_creation_date = domain.creation_date
+
     if isinstance(domain.expiration_date, list):
       domain.expiration_date = domain.expiration_date[0]
+
     if isinstance(domain.expiration_date, (datetime, date)):
       domain_expiration_date = domain.expiration_date.isoformat()
     else:
       domain_expiration_date = domain.expiration_date
-    if domain.org is None:
-      domain.org = domain.registrant_organization
+
+    # if domain.org is None:
+      # domain.org = domain.registrant_organization
+
     if isinstance(domain.status, list):
       domain.status = domain.status[0]
+
     return jsonify(
-      query = 'ok',
-      domain_name = domain.domain_name,
-      creation_date = domain_creation_date,
-      expiration_date = domain_expiration_date,
-      status = domain.status,
-      org = domain.org,
-      registrar = domain.registrar,
-      )
+      status = 'ok',
+      data = {
+        "domain_name": domain.name,
+        "registrar": domain.registrar,
+        "creation_date": domain_creation_date,
+        "expiration_date": domain_expiration_date,
+        "name_servers": domain.name_servers,
+        "status": domain.status,
+        "org": None,
+        "emails": None,
+      },
+      raw = domain.__dict__,
+    )
   except whois.parser.PywhoisError as e:
-    return jsonify( query = 'error', error = str(e))
+    return jsonify(
+      status = 'error',
+      error = str(e),
+    )
 
   except Exception:
-      return make_response('', 500)
+    return make_response('', 500)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+  app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
