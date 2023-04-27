@@ -8,10 +8,17 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "whois simple json api"
+  return "WhoIs micro service"
 
-@app.route('/<domain>')
-def get_whois(domain):
+@app.route("/tlds")
+def list_tlds():
+  return jsonify(
+    status = 'ok', 
+    data = whois.validTlds(),
+  )
+
+@app.route('/lookup/<domain>')
+def lookup_whois(domain):
   try:
     domain = whois.query(domain)
 
