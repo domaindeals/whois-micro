@@ -20,7 +20,7 @@ def list_tlds():
 @app.route('/lookup/<domain>')
 def lookup_whois(domain):
   try:
-    domain = whois.query(domain)
+    domain = whois.query(domain, include_raw_whois_text=True)
 
     if domain is None:
       return jsonify(
@@ -59,7 +59,8 @@ def lookup_whois(domain):
         "org": None,
         "emails": None,
       },
-      raw = domain.__dict__,
+      data_full = domain.__dict__,
+      raw = domain.text,
     )
   except whois.parser.PywhoisError as e:
     return jsonify(
