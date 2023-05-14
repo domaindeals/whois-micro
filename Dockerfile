@@ -1,5 +1,4 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.6-alpine3.7
-RUN apk add git
-RUN python -m pip install git+https://github.com/DannyCork/python-whois.git
+FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
+RUN apk update && apk add whois
 COPY . .
-RUN pip3 install -r requirements.txt 
+RUN pip3 install -r requirements.txt
