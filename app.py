@@ -22,6 +22,13 @@ def list_tlds():
 @app.route('/lookup/<domain>')
 def lookup_whois(domain):
     try:
+        override_rs = whois.ZZ["rs"]
+        override_rs["registrant"] = r"Registrant:\s?(.+)"
+
+        whois.mergeExternalDictWithRegex({
+            "rs": override_rs
+        })
+
         domain = whois.query(domain, include_raw_whois_text=True, ignore_returncode=True, simplistic=True, verbose=True)
 
         if domain is None:
