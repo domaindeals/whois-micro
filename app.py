@@ -69,14 +69,30 @@ def lookup_whois(domain):
             data_full=domain.__dict__,
             raw=domain.text,
         )
-    except whois.parser.PywhoisError as e:
+
+    except whois.WhoisQuotaExceeded as e:
         return jsonify(
             status='error',
-            error=str(e),
+            error='quota',
+            raw=str(e),
         )
 
-    except Exception:
-        return make_response('', 500)
+    except whois.UnknownTld as e:
+        return jsonify(
+            status='error',
+            error='unknown_tld',
+            raw=str(e),
+        )
+
+    except (whois.FailedParsingWhoisOutput, whois.UnknownDateFormat, whois.WhoisCommandFailed) as e:
+        return jsonify(
+            status='error',
+            error='internal',
+            raw=str(e),
+        )
+
+    except Exception as e:
+        return make_response(str(e), 500)
 
 
 if __name__ == "__main__":
