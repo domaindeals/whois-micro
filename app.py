@@ -50,6 +50,11 @@ def lookup_whois(domain):
         else:
             domain_creation_date = domain.creation_date
 
+        if isinstance(domain.last_updated, (datetime, date)):
+            domain_last_updated = domain.last_updated.isoformat()
+        else:
+            domain_last_updated = domain.last_updated
+
         if isinstance(domain.expiration_date, list):
             domain.expiration_date = domain.expiration_date[0]
 
@@ -65,10 +70,12 @@ def lookup_whois(domain):
             status='ok',
             data={
                 "domain_name": domain.name,
+                "domain_tld": domain.tld,
                 "registrar": domain.registrar,
                 "registrant": domain.registrant,
                 "creation_date": domain_creation_date,
                 "expiration_date": domain_expiration_date,
+                "last_updated": domain_last_updated,
                 "name_servers": domain.name_servers,
                 "status": domain.status,
                 "org": None,
