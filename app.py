@@ -6,6 +6,21 @@ import whoisdomain as whois
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
+override_rs = whois.ZZ["rs"]
+override_rs["registrant"] = r"Registrant:\s?(.+)"
+
+whois.mergeExternalDictWithRegex({
+    "rs": override_rs,
+    # RNIDS
+    "ac.rs": {"extend": "rs"},  # not a zone?
+    "co.rs": {"extend": "rs"},
+    "edu.rs": {"extend": "rs"},
+    "gov.rs": {"extend": "rs"},  # not a zone?
+    "in.rs": {"extend": "rs"},
+    "org.rs": {"extend": "rs"},
+})
+
+
 @app.route("/")
 def index():
     return "WhoIs micro service"
@@ -22,13 +37,6 @@ def list_tlds():
 @app.route('/lookup/<domain>')
 def lookup_whois(domain):
     try:
-        override_rs = whois.ZZ["rs"]
-        override_rs["registrant"] = r"Registrant:\s?(.+)"
-
-        whois.mergeExternalDictWithRegex({
-            "rs": override_rs
-        })
-
         domain = whois.query(domain, include_raw_whois_text=True, ignore_returncode=True, simplistic=True, verbose=True)
 
         if domain is None:
