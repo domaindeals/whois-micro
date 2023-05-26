@@ -1,10 +1,9 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, json, jsonify, make_response
 from datetime import date, datetime
 import os
 import whoisdomain as whois
 
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
 
 override_rs = whois.ZZ["rs"]
 override_rs["registrant"] = r"Registrant:\s?(.+)"
