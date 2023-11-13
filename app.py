@@ -11,6 +11,9 @@ override_rs["registrant"] = r"Registrant:\s?(.+)"
 whois.mergeExternalDictWithRegex({
     "rs": override_rs,
     # RNIDS
+    "срб": {"extend": "rs"},
+    "xn--90a3ac": {"extend": "rs"},  # срб
+
     "ac.rs": {"extend": "rs"},  # not a zone?
     "co.rs": {"extend": "rs"},
     "edu.rs": {"extend": "rs"},
@@ -110,4 +113,4 @@ def lookup_whois(domain):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
